@@ -111,8 +111,16 @@ const crearNuevoPassword = async (req,res)=>{
 const login = async(req,res)=>{
 
     try {
+
+        //Paso 1 capturar los daros del req.body
+        // los inputs en fron se deben llamar email y password
+
         const {email,password} = req.body
+
+        //Pso 2 comprobacion de espacios vacios     
         if (Object.values(req.body).includes("")) return res.status(404).json({msg:"Debes llenar todos los campos"})
+        
+            
         const veterinarioBDD = await Veterinario.findOne({email}).select("-status -__v -token -updatedAt -createdAt")
         if(!veterinarioBDD) return res.status(404).json({msg:"El usuario no se encuentra registrado"})
         if(!veterinarioBDD.confirmEmail) return res.status(403).json({msg:"Debes verificar tu cuenta antes de iniciar sesión"})
