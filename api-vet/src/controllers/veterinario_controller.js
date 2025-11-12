@@ -126,7 +126,14 @@ const login = async(req,res)=>{
         if(!veterinarioBDD.confirmEmail) return res.status(403).json({msg:"Debes verificar tu cuenta antes de iniciar sesión"})
         const verificarPassword = await veterinarioBDD.matchPassword(password)
         if(!verificarPassword) return res.status(401).json({msg:"El password no es correcto"})
+
+        //Paso 3
+        //aplico desestructuracion 
         const {nombre,apellido,direccion,telefono,_id,rol} = veterinarioBDD
+        //const {nombre,apellido,direccion,telefono,_id,rol,correo} = veterinarioBDD
+        //Paso 4 
+
+        //solo mando la informacion que se requiere 
         res.status(200).json({
             rol,
             nombre,
@@ -135,7 +142,9 @@ const login = async(req,res)=>{
             telefono,
             _id,
             email:veterinarioBDD.email
+            //correo
         })
+
 
     } catch (error) {
         console.error(error)
