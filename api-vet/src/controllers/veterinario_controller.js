@@ -1,6 +1,7 @@
 
 import Veterinario from "../models/Veterinario.js"
 import { sendMailToRecoveryPassword, sendMailToRegister } from "../helpers/sendMail.js"
+import { crearTokenJWT } from "../middlewares/JWT.js"
 
 
 const registro = async (req,res)=>{
@@ -131,10 +132,16 @@ const login = async(req,res)=>{
         //aplico desestructuracion 
         const {nombre,apellido,direccion,telefono,_id,rol} = veterinarioBDD
         //const {nombre,apellido,direccion,telefono,_id,rol,correo} = veterinarioBDD
+       
+        //token de acceso
+        const token = crearTokenJWT(veterinarioBDD._id,veterinarioBDD.rol)
+
+
         //Paso 4 
 
         //solo mando la informacion que se requiere 
         res.status(200).json({
+            token,
             rol,
             nombre,
             apellido,
@@ -153,6 +160,13 @@ const login = async(req,res)=>{
 }
 
 
+const perfil =(req,res)=>{
+	const {token,confirmEmail,createdAt,updatedAt,__v,...datosPerfil} = req.veterinarioHeader
+    res.status(200).json(datosPerfil)
+    //res.status(200).json({ msg: "Perfil del usuario" });
+
+}
+
 
 export {
     registro,
@@ -160,5 +174,6 @@ export {
     recuperarPassword,
     comprobarTokenPasword,
     crearNuevoPassword,
-    login
+    login,
+    perfil
 }

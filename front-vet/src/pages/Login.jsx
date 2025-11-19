@@ -4,11 +4,16 @@ import { Link, useNavigate } from "react-router"
 import {useFetch} from '../hooks/useFetch'
 import { ToastContainer } from 'react-toastify'
 import { useForm } from 'react-hook-form'
+import storeAuth from "../context/storeAuth"
+
 
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const  fetchDataBackend = useFetch()
+    //Proteccion de rutas
+    const { setToken, setRol } = storeAuth()
+
 
     const navigate = useNavigate()
     const { register, handleSubmit, formState: { errors } } = useForm()
@@ -19,6 +24,10 @@ const Login = () => {
         // debo asociar con el formulariop con on sumit 
         const url = `${import.meta.env.VITE_BACKEND_URL}/veterinario/login`
         const response = await fetchDataBackend(url, dataForm,'POST')
+
+        //Proteccion de rutas
+        setToken(response.token)
+        setRol(response.rol)
 
         //navegacion si existe una rrespuesta vamos la componente dashboar
         if(response){
