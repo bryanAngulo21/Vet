@@ -161,9 +161,21 @@ const login = async(req,res)=>{
 
 
 const perfil =(req,res)=>{
+    //res.send("Perfil del usuario");
+    try {
+        //PaSO 1: req.veterinarioHeader
+        //Paso 2. Middleware es la valdidacion
+        //Paso 3 Logica
+        //desestructuracion 
+        //...uso parametros rest la informacion restante se almacena en una sola varible llamada datos perfil 
 	const {token,confirmEmail,createdAt,updatedAt,__v,...datosPerfil} = req.veterinarioHeader
+        //Paso 4: Respuesta
+        // imprime
     res.status(200).json(datosPerfil)
-    //res.status(200).json({ msg: "Perfil del usuario" });
+    
+     } catch (error) {
+        res.status(500).json({ msg: `❌ Error en el servidor - ${error}` })
+    }
 
 }
 

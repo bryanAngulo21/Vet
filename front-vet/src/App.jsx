@@ -19,10 +19,29 @@ import Panel from './pages/Panel'
 import PublicRoute from './routes/PublicRoute'
 import ProtectedRoute from './routes/ProtectedRoute'
 
+import { useEffect } from 'react'
+import storeProfile from './context/storeProfile'
+import storeAuth from './context/storeAuth'
 
+//
 
 
 function App() {
+  //llamo en el componente App el store Profile Y el StoreAuth
+  //necisto que cda vez que alguien inice sesion se cargue lainformacion  del usuario
+  //uso useedct para que se carguen
+  const { profile} = storeProfile()//del storeProfile obtengo el metodo profile
+  const { token } = storeAuth()//del storesAuth tomo la variabel token 
+
+  // Use effecto efctos secuandarios 
+  //si exite un token se ejcuta la funcion profile y cada vez que exita un cambio en el token la informacon se va actualizar 
+//cada vez que se navegue en tre paginas
+  useEffect(() => {
+    if(token){
+      profile()
+    }
+  }, [token])
+
   return (
     <>
     <BrowserRouter>
