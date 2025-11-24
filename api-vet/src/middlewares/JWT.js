@@ -43,7 +43,8 @@ const verificarTokenJWT = async (req, res, next) => {
             if (!veterinarioBDD) return res.status(401).json({ msg: "Usuario no encontrado" })
 
             // Con esto se sabe que usuario a ingresado 
-            // en la peticon req se pone una nueva variable         
+            // en la peticon req se pone una nueva variable  
+                   
             req.veterinarioHeader = veterinarioBDD
             // contienue 
             next()

@@ -1,5 +1,9 @@
+import storeProfile from "../../context/storeProfile"
 
 export const CardProfile = () => {
+
+    //carga la infromcaion del usuario 
+    const {user} = storeProfile() 
 
     return (
 
@@ -19,31 +23,32 @@ export const CardProfile = () => {
 
             {/* Campo Nombre */}
             <div className="self-start">
-                <b>Nombre:</b><p className="inline-block ml-3"></p>
+                
+                <b>Nombre:</b><p className="inline-block ml-3">{user?.nombre}</p>
             </div>
 
 
             {/* Campo Apellido */}
             <div className="self-start">
-                <b>Apellido:</b><p className="inline-block ml-3"></p>
+                <b>Apellido:</b><p className="inline-block ml-3">{user?.apellido}</p>
             </div >
 
 
             {/* Campo Dirección */}
             <div className="self-start">
-                <b>Dirección:</b><p className="inline-block ml-3"></p>
+                <b>Dirección:</b><p className="inline-block ml-3">{user?.direccion}</p>
             </div>
 
 
             {/* Campo Celular */}
             <div className="self-start">
-                <b>Celular:</b><p className="inline-block ml-3"></p>
+                <b>Celular:</b><p className="inline-block ml-3">{user?.celular}</p>
             </div>
 
             
             {/* Campo Correo Electrónico */}
             <div className="self-start">
-                <b>Correo:</b><p className="inline-block ml-3"></p>
+                <b>Correo:</b><p className="inline-block ml-3">{user?.email}</p>
             </div>
         
         </div>
