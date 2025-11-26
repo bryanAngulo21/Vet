@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import storeProfile from "../../context/storeProfile"
 
 import { ToastContainer } from "react-toastify"
+import { toast } from "react-toastify"
 
 import { useEffect } from "react"
 
