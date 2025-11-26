@@ -219,12 +219,16 @@ const actualizarPassword = async (req,res)=>{
 const actualizarPerfil = async (req,res)=>{
 
     try {
-        const {id} = req.params
+        //Paso 1 obtener datos que recibe el controlador del backend 
+        //const {id} = req.params
+        const{_id}=req.veterinarioHeader
         const {nombre,apellido,direccion,celular,email} = req.body
-        if( !mongoose.Types.ObjectId.isValid(id) ) return res.status(400).json({msg:`ID inválido: ${id}`})
-        const veterinarioBDD = await Veterinario.findById(id)
+
+        //if( !mongoose.Types.ObjectId.isValid(id) ) return res.status(400).json({msg:`ID inválido: ${id}`})
+        //const veterinarioBDD = await Veterinario.findById(id)
+        const veterinarioBDD = await Veterinario.findById(_id)
         if(!veterinarioBDD) return res.status(404).json({ msg: `No existe el veterinario con ID ${id}` })
-        if (Object.values(req.body).includes("")) return res.status(400).json({msg:"Debes llenar todos los campos"})
+        //if (Object.values(req.body).includes("")) return res.status(400).json({msg:"Debes llenar todos los campos"})
         if (veterinarioBDD.email !== email)
         {
             const emailExistente  = await Veterinario.findOne({email})

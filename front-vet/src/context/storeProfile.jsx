@@ -38,7 +38,7 @@ const storeProfile = create((set) => ({
     },
 
 
-
+    //Actualizar contrasena
      updatePasswordProfile:async(url,data)=>{
         try {
             const respuesta = await axios.put(url, data, getAuthHeaders())
@@ -54,7 +54,11 @@ const storeProfile = create((set) => ({
         try {
             const respuesta = await axios.put(url, data, getAuthHeaders())
             set({ user: respuesta.data })
-            toast.success("Perfil actualizado correctamente")
+            toast.success("Perfil actualizado correctamente", {
+                autoClose: 2000,
+                closeOnClick: true,
+                pauseOnHover: false,
+            })
         } catch (error) {
             console.log(error)
             toast.error(error.response?.data?.msg)
