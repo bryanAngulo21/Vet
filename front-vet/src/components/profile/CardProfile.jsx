@@ -1,5 +1,6 @@
 import storeProfile from "../../context/storeProfile"
 
+
 export const CardProfile = () => {
 
     //carga la infromcaion del usuario 
