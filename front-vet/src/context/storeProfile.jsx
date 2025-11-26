@@ -1,5 +1,6 @@
 import { create } from "zustand"
 import axios from "axios" //para hacer peticiones al backend
+import { toast } from "react-toastify"
 
 
 //metodo sirve para crear el token de tipo beader y coger el token almacenado en el local storage
@@ -34,7 +35,32 @@ const storeProfile = create((set) => ({
         } catch (error) {
             console.error(error)
         }
+    },
+
+
+
+     updatePasswordProfile:async(url,data)=>{
+        try {
+            const respuesta = await axios.put(url, data, getAuthHeaders())
+            return respuesta
+        } catch (error) {
+            console.log(error)
+            toast.error(error.response?.data?.msg)
+        }
+    },
+
+    //actualizar perfil
+     updateProfile:async(url, data)=>{
+        try {
+            const respuesta = await axios.put(url, data, getAuthHeaders())
+            set({ user: respuesta.data })
+            toast.success("Perfil actualizado correctamente")
+        } catch (error) {
+            console.log(error)
+            toast.error(error.response?.data?.msg)
+        }
     }
+
     })
 )
 

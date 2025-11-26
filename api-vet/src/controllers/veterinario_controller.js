@@ -3,6 +3,8 @@ import Veterinario from "../models/Veterinario.js"
 import { sendMailToRecoveryPassword, sendMailToRegister } from "../helpers/sendMail.js"
 import { crearTokenJWT } from "../middlewares/JWT.js"
 
+import mongoose from "mongoose"
+
 
 const registro = async (req,res)=>{
 
@@ -179,22 +181,71 @@ const perfil =(req,res)=>{
 
 }
 
+
 const actualizarPassword = async (req,res)=>{
-    res.send("Actualizar password")
-    /*try {
-        const veterinarioBDD = await Veterinario.findById(req.veterinarioHeader._id)
+    //res.send("Actualizar password")
+    try {
+        //Paso 1 obtener datos que recibe el controlador del backend 
+        const{passwordactual, passwordnuevo}=req.body
+        const{_id}=req.veterinarioHeader
+        //Paso2
+        const veterinarioBDD = await Veterinario.findById(_id)
+        if(!veterinarioBDD) return res.status(404).json({msg:`Lo sentimos, no existe el veterinario ${id}`})
+
+        const verificarPassword = await veterinarioBDD.matchPassword(passwordactual)
+        if(!verificarPassword) return res.status(404).json({msg:"Lo sentimos, el password actual no es el correcto"})
+        
+        
+        //Paso 3 Logica cuando se ingrese la contrasena se guarda encriptda en la base de datos
+        veterinarioBDD.password = await veterinarioBDD.encryptPassword(passwordnuevo)
+        //metodo asincrono para guardar
+        await veterinarioBDD.save()
+        //Paso 4 mopswtrar respuesta con res.status
+    res.status(200).json({msg:"Password actualizado correctamente"})
+        /*const veterinarioBDD = await Veterinario.findById(req.veterinarioHeader._id)
         if(!veterinarioBDD) return res.status(404).json({msg:`Lo sentimos, no existe el veterinario ${id}`})
         const verificarPassword = await veterinarioBDD.matchPassword(req.body.passwordactual)
         if(!verificarPassword) return res.status(404).json({msg:"Lo sentimos, el password actual no es el correcto"})
         veterinarioBDD.password = await veterinarioBDD.encryptPassword(req.body.passwordnuevo)
-        await veterinarioBDD.save()
+        await veterinarioBDD.save()*/
 
-    res.status(200).json({msg:"Password actualizado correctamente"})
+
     } catch (error) {
         res.status(500).json({ msg: `❌ Error en el servidor - ${error}` })
-    }*/
+    }
 }
 
+
+const actualizarPerfil = async (req,res)=>{
+
+    try {
+        const {id} = req.params
+        const {nombre,apellido,direccion,celular,email} = req.body
+        if( !mongoose.Types.ObjectId.isValid(id) ) return res.status(400).json({msg:`ID inválido: ${id}`})
+        const veterinarioBDD = await Veterinario.findById(id)
+        if(!veterinarioBDD) return res.status(404).json({ msg: `No existe el veterinario con ID ${id}` })
+        if (Object.values(req.body).includes("")) return res.status(400).json({msg:"Debes llenar todos los campos"})
+        if (veterinarioBDD.email !== email)
+        {
+            const emailExistente  = await Veterinario.findOne({email})
+            if (emailExistente )
+            {
+                return res.status(404).json({msg:`El email ya se encuentra registrado`})  
+            }
+        }
+        veterinarioBDD.nombre = nombre ?? veterinarioBDD.nombre
+        veterinarioBDD.apellido = apellido ?? veterinarioBDD.apellido
+        veterinarioBDD.direccion = direccion ?? veterinarioBDD.direccion
+        veterinarioBDD.celular = celular ?? veterinarioBDD.celular
+        veterinarioBDD.email = email ?? veterinarioBDD.email
+        await veterinarioBDD.save()
+        res.status(200).json(veterinarioBDD)
+        
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ msg: `❌ Error en el servidor - ${error}` })
+    }
+}
 
 export {
     registro,
@@ -204,5 +255,6 @@ export {
     crearNuevoPassword,
     login,
     perfil,
-    actualizarPassword
+    actualizarPassword,
+    actualizarPerfil
 }
