@@ -1,18 +1,38 @@
 import { useState } from "react"
 
+// sprint 2:
+    // paso 1: crear los hooks 
+import { useFetch } from "../../hooks/useFetch"
+import { useNavigate } from "react-router"
+import { useForm } from "react-hook-form"
+
+import { generateAvatar, convertBlobToBase64 } from "../../helpers/consultarIA"
+import { toast, ToastContainer } from "react-toastify"
+const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/2138/2138440.png";
+
 
 export const Form = () => {
 
     const [stateAvatar, setStateAvatar] = useState({
-        generatedImage: "https://cdn-icons-png.flaticon.com/512/2138/2138440.png",
+        //generatedImage: "https://cdn-icons-png.flaticon.com/512/2138/2138440.png",
+        image: DEFAULT_AVATAR,
         prompt: "",
         loading: false
     })
 
-    const [selectedOption , setSelectedOption ] = useState("ia")
+
+    //sprint2
+    const navigate = useNavigate()
+    const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm()
+    const fetchDataBackend = useFetch()
+    const selectedOption = watch("imageOption")
+    //const [selectedOption , setSelectedOption ] = useState("ia")
+     //end 
 
 
+     //Paso 2
 
+     
     return (
 
         <form>
