@@ -13,7 +13,7 @@ const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/2138/2138440.png"
 
 export const Form = () => {
 
-    const [stateAvatar, setStateAvatar] = useState({
+    const [avatar, setAvatar] = useState({
         //generatedImage: "https://cdn-icons-png.flaticon.com/512/2138/2138440.png",
         image: DEFAULT_AVATAR,
         prompt: "",
@@ -32,11 +32,93 @@ export const Form = () => {
 
      //Paso 2
 
-     
-    return (
+    
 
-        <form>
-            
+     //Paso 3
+     // creo 2 funciones 
+     // f1: genero la imagen y combiete a base 65
+    // f2 envio al registro
+      const handleGenerateImage = async () => {
+        //cambio el loading de false a true 
+        setAvatar(prev => ({ ...prev, loading: true }))
+
+        //llamo a la funcion generar avatar
+        //hace la peticion al modelo de ia y retorna la peticion la imagen de tipo blob
+        const blob = await generateAvatar(avatar.prompt)
+
+        // compara y verifica si la imagen se genero o existio algun incombeneiente
+        //si hubo error se manda un mensaje 
+        if (blob.type === "image/jpeg") {
+            // este es el formato cuando se genera la imagen
+            // blob:http://localhost/ea27cc7d-
+            // se extrae la url de la imagen
+            const imageUrl = URL.createObjectURL(blob)
+            // pasamos la imagen a base 64
+            // data:image/png;base64,iVBORw0KGg
+            const base64Image = await convertBlobToBase64(blob)
+            //volvemos a setear la imagen en base 64
+            setAvatar(prev => ({ ...prev, image: imageUrl, loading: false }))
+            //le carga la imagen alado del perfil 
+            setValue("avatarMascotaIA", base64Image)
+        }
+        else {
+            //si no carga la imagen se carga una de default 
+            toast.error("Error al generar la imagen, vuelve a intentarlo dentro de 1 minuto");
+            setAvatar(prev => ({ ...prev, image: DEFAULT_AVATAR, loading: false }))
+            setValue("avatarMascotaIA", avatar.image)
+        }
+    }
+
+// Estra funcion agrega datos al form data 
+    const registerPatient = async (dataForm) => {
+        //creo el form data permite enviar datos al servidor que vamos a hacer la peticion 
+        //este es el formato que tien el from dato 
+        /*
+        const dataForm = {
+            nombre: "Firulais",
+            edad: "2",
+            imagen: [File]  // un array con 1 imagen cargada por el usuario
+        }
+        */
+        // el form data es una clase de JavaScript para enviar datos como texto + imágenes al servidor
+        
+        const formData = new FormData()
+
+        // Recorre todos los elementos del formulario
+        Object.keys(dataForm).forEach((key) => {
+            if (key === "imagen") {
+                formData.append("imagen", dataForm.imagen[0]) // se guarda el archivo real
+            } else {
+                formData.append(key, dataForm[key]) // se guardan nombre y edad
+            }
+        })
+
+        //Especifico la url para hacer la peticion 
+        const url = `${import.meta.env.VITE_BACKEND_URL}/paciente/registro`
+        //Obtengo el token del local storage
+        const storedUser = JSON.parse(localStorage.getItem("auth-token"))
+        //Especifico las cabeceras, tipo de contenido multipart form data tezxto con una imagen
+        const headers = {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${storedUser.state.token}`
+        }
+        //Hace la peticion manda verbo y cabeceras 
+        const response = await fetchDataBackend(url, formData, "POST", headers)
+
+        //Respueta y navegacion  
+        //si viene una respuesta positiva navega añl dashboard/list
+        if (response) {
+            setTimeout(() => {
+                navigate("/dashboard/list")
+            }, 2000)
+        }
+    }
+
+        return (
+
+        <form onSubmit={handleSubmit(registerPatient)}>
+
+            <ToastContainer />
 
             {/* Información del propietario */}
             <fieldset className="border-2 border-gray-500 p-6 rounded-lg shadow-lg">
@@ -54,12 +136,15 @@ export const Form = () => {
                             inputMode="numeric"
                             placeholder="Ingresa la cédula"
                             className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
+                            {...register("cedulaPropietario", { required: "La cédula es obligatoria" })}
                         />
+
                         <button className="py-1 px-8 bg-gray-600 text-slate-300 border rounded-xl hover:scale-110 
                         duration-300 hover:bg-gray-900 hover:text-white sm:w-80">
                             Consultar
                         </button>
                     </div>
+                    {errors.cedulaPropietario && <p className="text-red-800">{errors.cedulaPropietario.message}</p>}
                 </div>
 
 
@@ -71,7 +156,9 @@ export const Form = () => {
                         type="text"
                         placeholder="Ingresa nombre y apellido"
                         className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                        {...register("nombrePropietario", { required: "El nombre completo es obligatorio" })}
                     />
+                    {errors.nombrePropietario && <p className="text-red-800">{errors.nombrePropietario.message}</p>}
                 </div>
 
 
@@ -82,7 +169,9 @@ export const Form = () => {
                         type="email"
                         placeholder="Ingresa el correo electrónico"
                         className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                        {...register("emailPropietario", { required: "El correo electrónico es obligatorio" })}
                     />
+                    {errors.emailPropietario && <p className="text-red-800">{errors.emailPropietario.message}</p>}
                 </div>
 
 
@@ -94,7 +183,9 @@ export const Form = () => {
                         inputMode="tel"
                         placeholder="Ingresa el celular"
                         className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                        {...register("celularPropietario", { required: "El celular es obligatorio" })}
                     />
+                    {errors.celularPropietario && <p className="text-red-800">{errors.celularPropietario.message}</p>}
                 </div>
 
             </fieldset>
@@ -117,19 +208,22 @@ export const Form = () => {
                         type="text"
                         placeholder="Ingresar nombre"
                         className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                        {...register("nombreMascota", { required: "El nombre de la mascota es obligatorio" })}
                     />
+                    {errors.nombreMascota && <p className="text-red-800">{errors.nombreMascota.message}</p>}
                 </div>
 
 
                 {/* Campo imagen de la mascota*/}
                 <label className="mb-2 block text-sm font-semibold">Imagen de la mascota</label>
-                
+
                 <div className="flex gap-4 mb-2">
                     {/* Opción: Imagen con IA */}
                     <label className="flex items-center gap-2">
                         <input
                             type="radio"
                             value="ia"
+                            {...register("imageOption", { required: "El nombre de la mascota es obligatorio" })}
                         />
                         Generar con IA
                     </label>
@@ -139,10 +233,13 @@ export const Form = () => {
                         <input
                             type="radio"
                             value="upload"
+                            {...register("imageOption", { required: "Seleccione una opción para cargar la imagen" })}
                         />
                         Subir Imagen
                     </label>
                 </div>
+                {errors.imageOption && <p className="text-red-800">{errors.imageOption.message}</p>}
+
 
 
                 {/* Campo imagen con IA */}
@@ -154,19 +251,20 @@ export const Form = () => {
                                 type="text"
                                 placeholder="Ingresa el prompt"
                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
-                                value={stateAvatar.prompt}
-                                onChange={(e) => setStateAvatar(prev => ({ ...prev, prompt: e.target.value }))}
+                                value={setAvatar.prompt}
+                                onChange={(e) => setAvatar(prev => ({ ...prev, prompt: e.target.value }))}
                             />
                             <button
                                 type="button"
                                 className="py-1 px-8 bg-gray-600 text-slate-300 border rounded-xl hover:scale-110 duration-300 hover:bg-gray-900 hover:text-white sm:w-80"
-                                disabled={stateAvatar.loading}
+                                onClick={handleGenerateImage}
+                                disabled={setAvatar.loading}
                             >
-                                {stateAvatar.loading ? "Generando..." : "Generar con IA"}
+                                {avatar.loading ? "Generando..." : "Generar con IA"}
                             </button>
                         </div>
-                        {stateAvatar.generatedImage && (
-                            <img src={stateAvatar.generatedImage} alt="Avatar IA" width={100} height={100} />
+                        {avatar.image && (
+                            <img src={avatar.image} alt="Avatar IA" width={100} height={100} />
                         )}
                     </div>
                 )}
@@ -180,9 +278,11 @@ export const Form = () => {
                             type="file"
                             accept="image/*"
                             className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                            {...register("imagen")}
                         />
                     </div>
                 )}
+
 
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -193,14 +293,15 @@ export const Form = () => {
                             id="tipo"
                             className="block w-full rounded-md border border-gray-300 py-2 px-3 text-gray-700"
                             defaultValue=""
+                            {...register("tipoMascota", { required: "El tipo de la mascota es obligatorio" })}
                         >
                             <option value="">--- Seleccionar ---</option>
                             <option value="gato">Gato</option>
                             <option value="perro">Perro</option>
                             <option value="otro">Otro</option>
                         </select>
+                        {errors.tipoMascota && <p className="text-red-800">{errors.tipoMascota.message}</p>}
                     </div>
-
 
                     {/* Campo fecha de nacimiento */}
                     <div>
@@ -209,10 +310,12 @@ export const Form = () => {
                             id="fechaNacimiento"
                             type="date"
                             className="block w-full rounded-md border border-gray-300 py-2 px-3 text-gray-700"
+                            {...register("fechaNacimientoMascota", { required: "La fecha de nacimiento de la mascota es obligatorio" })}
                         />
+                            {errors.fechaNacimientoMascota && <p className="text-red-800">{errors.fechaNacimientoMascota.message}</p>}
                     </div>
                 </div>
-				
+
 
                 {/* Campo observación*/}
                 <div>
@@ -220,7 +323,9 @@ export const Form = () => {
                     <textarea
                         placeholder="Ingresa el síntoma u observación de forma general"
                         className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                        {...register("detalleMascota", { required: "La observación de la mascota es obligatorio" })}
                     />
+                    {errors.detalleMascota && <p className="text-red-800">{errors.detalleMascota.message}</p>}
                 </div>
 
             </fieldset>
@@ -237,4 +342,5 @@ export const Form = () => {
         </form>
 
     )
+
 }
