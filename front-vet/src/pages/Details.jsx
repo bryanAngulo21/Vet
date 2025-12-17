@@ -1,14 +1,47 @@
 /* eslint-disable no-unused-vars */
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import TableTreatments from "../components/treatments/Table"
 import ModalTreatments from "../components/treatments/Modal"
 
+//ver detalle
+import { useParams } from "react-router"
+import {useFetch} from "../hooks/useFetch"
 
 
 const Details = () => {
     
-
+    const { id } = useParams()
+    const  fetchDataBackend  = useFetch()
     const [treatments, setTreatments] = useState(["demo"])
+    const [patient, setPatient] = useState({})//uso use state para guarsdar la informacion del baceknd 
+
+    //metodo formatea la fecha en dia mes y año
+    const formatDate = (date) => {
+        return new Date(date).toLocaleDateString('es-EC', { dateStyle: 'long', timeZone: 'UTC' })
+    }
+
+
+    //funcion listar paceinte la llomo dentro del useEffect
+    useEffect(() => {
+        const listPatient = async () => {
+            //url de la peticion  
+            const url = `${import.meta.env.VITE_BACKEND_URL}/paciente/${id}`
+            //Obtener el token del local storage
+            const storedUser = JSON.parse(localStorage.getItem("auth-token"))
+            //Defno la cabecera
+
+            const headers= {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${storedUser.state.token}`
+            }
+
+            //Hago la peticon con el fetch data backend 
+            const response = await fetchDataBackend(url, null, "GET", headers)
+            //cargar la respuesta al paciente  
+            setPatient(response)
+        }
+        listPatient()
+    }, [])
 
 
 
@@ -29,59 +62,72 @@ const Details = () => {
 
                         <ul className="list-disc pl-5">
 
-                            <li className="text-md text-gray-00 mt-4 font-bold text-xl">Datos del propietrio</li>
+                            <li className="text-md text-gray-00 mt-4 font-bold text-xl">
+                                Datos del propietrio</li>
 
 
                             {/* Datos del propietario */}
                             <ul className="pl-5">
 
                                 <li className="text-md mt-2">
-                                    <span className="text-gray-600 font-bold">Cédula: </span>
+                                    <span className="text-gray-600 font-bold">
+                                        Cédula: {patient?.cedulaPropietario}</span>
                                 </li>
 
                                 <li className="text-md mt-2">
-                                    <span className="text-gray-600 font-bold">Nombres completos: </span>
+                                    <span className="text-gray-600 font-bold">
+                                        Nombres completos: {patient?.nombrePropietario}</span>
                                 </li>
 
                                 <li className="text-md mt-2">
-                                    <span className="text-gray-600 font-bold">Correo electrónico: </span>
+                                    <span className="text-gray-600 font-bold">
+                                        Correo electrónico: {patient?.emailPropietario}</span>
                                 </li>
 
                                 <li className="text-md mt-2">
-                                <span className="text-gray-600 font-bold">Celular: </span>
+                                <span className="text-gray-600 font-bold">
+                                    Celular: {patient?.celularPropietario}</span>
                                 </li>
 
                             </ul>
 
 
 
-                            <li className="text-md text-gray-00 mt-4 font-bold text-xl">Datos de la mascota</li>
+                            <li className="text-md text-gray-00 mt-4 font-bold text-xl">
+                                Datos de la mascota</li>
 
 
                             {/* Datos del paciente */}
                             <ul className="pl-5">
 
                                 <li className="text-md mt-2">
-                                    <span className="text-gray-600 font-bold">Nombre: </span>
+                                    <span className="text-gray-600 font-bold">
+                                        Nombre: {patient?.nombreMascota}</span>
                                 </li>
 
                                 <li className="text-md mt-2">
-                                    <span className="text-gray-600 font-bold">Tipo: </span>
+                                    <span className="text-gray-600 font-bold">
+                                        Tipo: {patient?.tipoMascota}</span>
                                 </li>
 
                                 <li className="text-md mt-2">
-                                    <span className="text-gray-600 font-bold">Fecha de nacimiento: </span>
+                                    <span className="text-gray-600 font-bold">
+                                        {/* llamo al metodo para formaterar fecha */}
+                                        Fecha de nacimiento: {formatDate(patient?.fechaNacimientoMascota)}</span>
                                 </li>
 
                                 <li className="text-md mt-2">
-                                    <span className="text-gray-600 font-bold">Estado: </span>
+                                    <span className="text-gray-600 font-bold">
+                                        Estado: </span>
                                     <span className="bg-blue-100 text-green-500 text-xs font-medium 
                                         mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
+                                    {patient?.estadoMascota && "activo"}
                                     </span>
                                 </li>
 
                                 <li className="text-md text-gray-00 mt-4">
-                                    <span className="text-gray-600 font-bold">Observación: </span>
+                                    <span className="text-gray-600 font-bold">
+                                        Observación: {patient?.detalleMascota}</span>
                                 </li>
                             </ul>
 
@@ -92,8 +138,7 @@ const Details = () => {
                     
                     {/* Imagen lateral */}
                     <div>
-                        <img src="https://cdn-icons-png.flaticon.com/512/2138/2138440.png" 
-                            alt="dogandcat" className='h-80 w-80' />
+                        <img src={patient?.avatarMascota || patient?.avatarMascotaIA} alt="dogandcat" className='h-80 w-80 rounded-full'/>
                     </div>
                 </div>
 

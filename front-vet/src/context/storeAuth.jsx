@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-
+//cuando se inicia secion se genra un token 
 
 const storeAuth = create(
     //debo crear un metodo persist 
