@@ -163,6 +163,7 @@ const loginPropietario = async(req,res)=>{
         const {email:emailPropietario,password:passwordPropietario} = req.body
 
         //Paso2
+        //Validaciones
         if (Object.values(req.body).includes("")) return res.status(404).json({msg:"Debes llenar todos los campos"})
         const propietarioBDD = await Paciente.findOne({emailPropietario})
         if(!propietarioBDD) return res.status(404).json({msg:"El propietario no se encuentra registrado"})
@@ -175,6 +176,7 @@ const loginPropietario = async(req,res)=>{
             rol,
             _id
         })
+        //Paso3
     } catch (error) {
         console.error(error)
         res.status(500).json({ msg: `❌ Error en el servidor - ${error}` })

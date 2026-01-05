@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken" 
 import Veterinario from "../models/Veterinario.js" 
 import Paciente from "../models/Paciente.js" 
+// CREA EL TOKEN DE ACCESO
+//VERIFICA EL TOKEN DE ACCESO
 
 /** 
  * Crear token JWT 
@@ -47,6 +49,7 @@ const verificarTokenJWT = async (req, res, next) => {
             // contienue  
             next() 
         } 
+        //Aqui va la autenticacion basda en roles 
          else{ 
             const pacienteBDD = await Paciente.findById(id).lean().select("-password") 
             if (!pacienteBDD) return res.status(401).json({ msg: "Usuario no encontrado" }) 
