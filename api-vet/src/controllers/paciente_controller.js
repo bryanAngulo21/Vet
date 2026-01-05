@@ -183,6 +183,33 @@ const loginPropietario = async(req,res)=>{
     }
 }
 
+const perfilPropietario = (req, res) => {
+   // res.send("desde el perfil propietario")
+    // 1. se pude hacer una consulta a base de datos
+    // 2. se puede obtener de las cabeceras headers 
+
+    try {
+        //Paso 1 
+        //Paso 2
+        //Paso 3
+        //obtengo la inofrmacion dela scabeceras de paciente header hgo desetructuracion ppara obtener la informacion que necesito 
+        const{_id, rol,nombrePropietario,cedulaPropietario,emailPropietario,celularPropietario,nombreMascota} = req.pacienteHeader
+
+        //Paso 4
+        res.status(200).json({
+            _id,
+            rol,
+            nombrePropietario,
+            cedulaPropietario,
+            emailPropietario,
+            celularPropietario,
+            nombreMascota,
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ msg: `❌ Error en el servidor - ${error}` })
+    }
+}
 
 
 
@@ -192,5 +219,6 @@ export{
     detallePaciente,
     eliminarPaciente,
     actualizarPaciente,
-    loginPropietario
+    loginPropietario,
+    perfilPropietario
 }

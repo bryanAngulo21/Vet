@@ -10,19 +10,27 @@ import storeAuth from "../context/storeAuth"
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
+
+    const navigate = useNavigate()
+    const { register, handleSubmit, formState: { errors } } = useForm()
+
     const  fetchDataBackend = useFetch()
     //Proteccion de rutas
     const { setToken, setRol } = storeAuth()
 
 
-    const navigate = useNavigate()
-    const { register, handleSubmit, formState: { errors } } = useForm()
 
     
      const loginUser = async(dataForm) => {
         //endpoint para hacer la peticion vien desde el backend
         // debo asociar con el formulariop con on sumit 
-        const url = `${import.meta.env.VITE_BACKEND_URL}/veterinario/login`
+        //IDENTIFIACAR EL ROL
+        // //const url = `${import.meta.env.VITE_BACKEND_URL}/veterinario/login`
+        
+         const url = dataForm.password.includes("VET")
+            ? `${import.meta.env.VITE_BACKEND_URL}/paciente/login`
+            : `${import.meta.env.VITE_BACKEND_URL}/veterinario/login`
+        
         const response = await fetchDataBackend(url, dataForm,'POST')
 
         //Proteccion de rutas

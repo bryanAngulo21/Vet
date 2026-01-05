@@ -51,6 +51,7 @@ const verificarTokenJWT = async (req, res, next) => {
         } 
         //Aqui va la autenticacion basda en roles 
          else{ 
+            //Aqui esta la inofrmacion del paciente en sus cabeceras
             const pacienteBDD = await Paciente.findById(id).lean().select("-password") 
             if (!pacienteBDD) return res.status(401).json({ msg: "Usuario no encontrado" }) 
             req.pacienteHeader = pacienteBDD 

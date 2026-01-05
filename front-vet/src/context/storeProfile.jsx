@@ -26,8 +26,18 @@ const storeProfile = create((set) => ({
     profile: async () => {
 
         try {
-            //url para hacer la peticion revsar vetirnario    
-            const url = `${import.meta.env.VITE_BACKEND_URL}/veterinario/perfil`
+            //url para hacer la peticion revsar vetirnario 
+            //uno solo rol   
+            //const url = `${import.meta.env.VITE_BACKEND_URL}/veterinario/perfil`
+            
+            //VARIACION PARA ROLES 
+            const storedUser = JSON.parse(localStorage.getItem("auth-token"))
+            const endpoint = storedUser.state.rol ==="veterinario"
+                ? "veterinario/perfil"
+                : "paciente/perfil"
+            const url = `${import.meta.env.VITE_BACKEND_URL}/${endpoint}`
+
+
             //Hago la peticion con libreira axios le paso url y autenticacion
             const respuesta = await axios.get(url, getAuthHeaders())
             //Setea a ese usuario y le carga con la informacion que vien desde el backend
