@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { useNavigate } from 'react-router'
 //mensaje informativo 
 import { ToastContainer } from "react-toastify"
+import storeAuth from "../../context/storeAuth"
 
 const Table = () => {
 
@@ -12,6 +13,8 @@ const Table = () => {
     const [patients, setPatients] = useState([])
 //mostrar detalle
     const navigate = useNavigate()
+    //traer el rol de storeAuth
+    const {rol}=storeAuth()
     
     const listPatients = async () => {
         //url a hacer la peticion
@@ -112,13 +115,16 @@ const Table = () => {
 
 
                             <td className='py-2 text-center'>
-                                <MdPublishedWithChanges
+                                
+                                {rol==="veterinario"&&(
+                                    <MdPublishedWithChanges
                                     title="Actualizar"
                                     className="h-7 w-7 text-slate-800 cursor-pointer inline-block mr-2
                                     hover:text-blue-600"
                                     onClick={() => navigate(`/dashboard/update/${patient._id}`)}
                                 />
-
+                                )
+                            }
 
                                 <MdInfo
                                     title="Más información"
@@ -127,12 +133,16 @@ const Table = () => {
                                     onClick={() => navigate(`/dashboard/details/${patient._id}`)}
                                 />
 
-                                <MdDeleteForever
+                                {rol==="veterinario"&&(
+                                    <MdDeleteForever
                                     title="Eliminar"
                                     className="h-7 w-7 text-red-900 cursor-pointer inline-block
                                     hover:text-red-600"
                                     onClick={()=>{deletePatient(patient._id)}}
                                 />
+                                )
+
+                                }
                             </td>
                         </tr>
                     ))

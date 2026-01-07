@@ -6,6 +6,7 @@ import ModalTreatments from "../components/treatments/Modal"
 //ver detalle
 import { useParams } from "react-router"
 import {useFetch} from "../hooks/useFetch"
+import storeAuth from "../context/storeAuth"
 
 
 const Details = () => {
@@ -15,6 +16,7 @@ const Details = () => {
     const [treatments, setTreatments] = useState(["demo"])
     const [patient, setPatient] = useState({})//uso use state para guarsdar la informacion del baceknd 
 
+    const{rol}=storeAuth()
     //metodo formatea la fecha en dia mes y año
     const formatDate = (date) => {
         return new Date(date).toLocaleDateString('es-EC', { dateStyle: 'long', timeZone: 'UTC' })
@@ -153,8 +155,9 @@ const Details = () => {
                     {/* Apertura del modal tratamientos */}
                     <p>Este módulo te permite gestionar tratamientos</p>
                     {
-                        true &&
+                         rol==="veterinario" &&
                         (
+
                             <button className="px-5 py-2 bg-green-800 text-white rounded-lg hover:bg-green-700">
                                 Registrar
                             </button>

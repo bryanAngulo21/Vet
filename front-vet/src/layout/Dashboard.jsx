@@ -55,18 +55,20 @@ const Dashboard = () => {
 
 
                     {/* Enlaces a Listar */}
+
                     <li className="text-center">
                         <Link to='/dashboard/list' 
                         className={`${urlActual === '/dashboard/list' ? 'text-slate-200 bg-gray-900 px-3 py-2 rounded-md text-center' : 'text-slate-600'} text-xl block mt-2 hover:text-slate-600`}>Listar</Link>
                     </li>
 
-
                     {/* Enlaces a Crear */}
+                    {
+                    user?.rol=="veterinario"&&(
                     <li className="text-center">
                         <Link to='/dashboard/create' 
                         className={`${urlActual === '/dashboard/create' ? 'text-slate-100 bg-gray-900 px-3 py-2 rounded-md text-center' : 'text-slate-600'} text-xl block mt-2 hover:text-slate-600`}>Crear</Link>
-                    </li>
-
+                    </li>)
+                    }
 
                     {/* Enlaces a Chat */}
                     <li className="text-center">

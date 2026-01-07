@@ -8,8 +8,8 @@ const router = Router()
 
 router.post('/paciente/login',loginPropietario)
 
-router.get('/paciente/perfil',verificarTokenJWT,perfilPropietario)
 
+router.get('/paciente/perfil',verificarTokenJWT,perfilPropietario)
 
 
 router.post("/paciente/registro",verificarTokenJWT, registrarPaciente)

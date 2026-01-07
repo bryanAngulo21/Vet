@@ -66,10 +66,16 @@ const registrarPaciente = async(req,res)=>{
 }
 
 const listarPacientes = async (req,res)=>{
+
     try {
-        const pacientes = await Paciente.find({ estadoMascota: true, veterinario: req.veterinarioHeader._id }).select
-        ("-passwordPropietario -createdAt -updatedAt -__v").populate('veterinario','_id nombre apellido')
-        res.status(200).json(pacientes)
+        if (req.pacienteHeader?.rol ==="paciente"){
+            const pacientes = await Paciente.find(req.pacienteHeader._id).select("-salida -createdAt -updatedAt -__v").populate('veterinario','_id nombre apellido')
+            res.status(200).json(pacientes)
+        }
+        else{
+            const pacientes = await Paciente.find({ estadoMascota: true, veterinario: req.veterinarioHeader?._id }).select("-salida -createdAt -updatedAt -__v").populate('veterinario','_id nombre apellido')
+            res.status(200).json(pacientes)
+        }
 
     } catch (error) {
         console.error(error)
