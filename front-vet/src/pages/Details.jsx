@@ -8,15 +8,24 @@ import { useParams } from "react-router"
 import {useFetch} from "../hooks/useFetch"
 import storeAuth from "../context/storeAuth"
 
+//para los modulos de registrar tramientos y apgos
+import storeTreatments from "../context/storeTreatments"
+import { ToastContainer} from 'react-toastify'
+
 
 const Details = () => {
     
     const { id } = useParams()
-    const  fetchDataBackend  = useFetch()
-    const [treatments, setTreatments] = useState(["demo"])
     const [patient, setPatient] = useState({})//uso use state para guarsdar la informacion del baceknd 
 
+    const  fetchDataBackend  = useFetch()
+    const [treatments, setTreatments] = useState([])
+
+
     const{rol}=storeAuth()
+
+    const { modal, toggleModal } = storeTreatments()//abrir modal
+
     //metodo formatea la fecha en dia mes y año
     const formatDate = (date) => {
         return new Date(date).toLocaleDateString('es-EC', { dateStyle: 'long', timeZone: 'UTC' })
@@ -24,8 +33,8 @@ const Details = () => {
 
 
     //funcion listar paceinte la llomo dentro del useEffect
-    useEffect(() => {
-        const listPatient = async () => {
+    
+    const listPatient = async () => {
             //url de la peticion  
             const url = `${import.meta.env.VITE_BACKEND_URL}/paciente/${id}`
             //Obtener el token del local storage
@@ -40,15 +49,26 @@ const Details = () => {
             //Hago la peticon con el fetch data backend 
             const response = await fetchDataBackend(url, null, "GET", headers)
             //cargar la respuesta al paciente  
+            console.log(response)
             setPatient(response)
+            //para cargar tratamientso 
+            setTreatments(response.tratamientos)
+    }
+
+    useEffect(() => {
+        //caundo queireo que se ejcute el metodo lsitar paciente
+        if(modal===false){
+            listPatient()
         }
-        listPatient()
-    }, [])
+        
+    }, [modal])
 
 
 
     return (
         <>
+            <ToastContainer/>
+
             <div>
                 <h1 className='font-black text-4xl text-gray-500'>Visualizar</h1>
                 <hr className='my-4 border-t-2 border-gray-300' />
@@ -158,13 +178,16 @@ const Details = () => {
                          rol==="veterinario" &&
                         (
 
-                            <button className="px-5 py-2 bg-green-800 text-white rounded-lg hover:bg-green-700">
+                           <button className="px-5 py-2 bg-green-800 text-white rounded-lg
+                            hover:bg-green-700" 
+                            onClick={()=>{toggleModal("treatments")}} >
                                 Registrar
                             </button>
                         )
                     }
 
-                    {false  && (<ModalTreatments/>)}
+                    {/*false  && (<ModalTreatments/>)*/}
+                    {modal === "treatments" && (<ModalTreatments patientID={patient._id}/>)}
 
                 </div>
                 
@@ -177,7 +200,8 @@ const Details = () => {
                             <span className="font-medium">No existen registros</span>
                         </div>
                         :
-                        <TableTreatments treatments={treatments} />
+                        //para borrar tratamientos
+                        <TableTreatments treatments={treatments} listPatient={listPatient} />
                 }
                 
             </div>

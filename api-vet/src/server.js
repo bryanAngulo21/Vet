@@ -35,10 +35,13 @@ app.get('/', (req, res) => res.send("Server on"));
 // Rutas importadas
 import routerVeterinarios from './routers/veterinario_routes.js'
 import routerPacientes from './routers/paciente_routes.js'
+import routerTratamientos from './routers/tratamiento_routes.js'
 
 // Rutas (van después del middleware)
 app.use('/api', routerVeterinarios);
 app.use('/api', routerPacientes);
+app.use('/api', routerTratamientos);
+
 
 // 404
 app.use((req, res) => res.status(404).send("Endpoint no encontrado - 404"));
