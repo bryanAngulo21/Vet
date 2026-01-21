@@ -39,7 +39,19 @@ const storeTreatments = create(set=>({
                 console.error(error)
             }
         }
+    },
+
+    payTreatments:async(url,data)=>{
+        try {   
+            const respuesta = await axios.post(url,data,getAuthHeaders())
+            set((state)=>({modal:!state.modal}))
+            toast.success(respuesta.data.msg)
+        } catch (error) {
+            console.error(error)
+        }
+        
     }
+
 }))
 
 

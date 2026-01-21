@@ -61,6 +61,7 @@ const pagarTratamiento = async (req, res) => {
         const tratamiento = await Tratamiento.findById(treatmentId)
         if (tratamiento.estadoPago === "Pagado") return res.status(400).json({ message: "Este tratamiento ya fue pagado" })
         // especificar el metod de pago
+    if (tratamiento.precio !== cantidad) return res.status(400).json({message: "Monto no valido"})
     if (!paymentMethodId) return res.status(400).json({ message: "paymentMethodId no proporcionado" })
         //aqi s epon mas validaciones numeros positivos no cero
 
