@@ -7,18 +7,19 @@ import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js'
 
 function ModalPayment({ treatment }) {
 
-    const { toggleModal } = storeTreatments()
-    const { payTreatments } = storeTreatments()
-    const stripe = useStripe()
-    const elements = useElements()
-    const [loading, setLoading] = useState(false)
+    const { toggleModal } = storeTreatments() //apaertura y cierre de modla
+    const { payTreatments } = storeTreatments()//metodo pára hacer los pagos
+    const stripe = useStripe()//inicializao stripe
+    const elements = useElements()//proceso el pago
+    const [loading, setLoading] = useState(false)//efecto de procesadndo
 
-
+//metodp para hacer el pago
     const handlePayment = async (e) => {
 
-        e.preventDefault()
-        setLoading(true)
-        const cardElement = elements.getElement(CardElement)
+        e.preventDefault()//modal no se recargue hasta que hacer clic en boton
+        setLoading(true)// en estadpo activo hasta que se procese el pago
+        const cardElement = elements.getElement(CardElement) //intancio el card elemente para el ingreso de la tarjeta de cretditp
+        // cargamos la informacion 
         const { paymentMethod } = await stripe.createPaymentMethod({
             type: "card",
             card: cardElement,
@@ -26,10 +27,10 @@ function ModalPayment({ treatment }) {
         const data ={
             paymentMethodId:paymentMethod.id,
             treatmentId: treatment._id,
-            cantidad:  Math.round(+treatment.precio * 1.12 * 100),
+            cantidad:  treatment.precio,
             motivo: treatment.descripcion,
         }
-        const url = `${import.meta.env.VITE_BACKEND_URL}/tratamiento/pago`
+        const url = `${import.meta.env.VITE_BACKEND_URL}/tratamiento/pago`//mandamos la peticion donde vamos a hacer el pago 
         payTreatments(url,data) 
     }
 
@@ -37,6 +38,7 @@ function ModalPayment({ treatment }) {
 
     return (
 
+        //es el formulario la interfaz grafica 
         <div className="fixed inset-0 flex items-center justify-center">
             <div className="bg-gray-900 rounded-lg shadow-lg overflow-y-auto 
             p-6 max-w-lg w-full border border-gray-700 relative">
@@ -61,23 +63,23 @@ function ModalPayment({ treatment }) {
                                 Prioridad: {treatment.prioridad}
                             </li>
                             <li>
-                                Subtotal: ${treatment.precio}
+                                Total: ${treatment.precio}
                             </li>
                         </ul>
                     </div>
 
                     <div>
                         <label className="block text-sm font-semibold 
-                        text-gray-200 text-left">Precio final 12% IVA</label>
+                        text-gray-200 text-left">Precio final 15% IVA</label>
 
                         <p className="text-green-400 bg-gray-700 p-2 rounded-md 
-                        font-bold text-left">${(treatment.precio * 1.12).toFixed(2)}</p>
+                        font-bold text-left">${(treatment.precio).toFixed(2)}</p>
                     </div>
 
 
                     <label className="block text-sm font-semibold text-gray-200 text-left m-0">Tarjeta de crédito</label>
 
-
+                    {/* despliega el card elemnt el modal de la tarjeta de credito*/}
                     <div className="p-3 border border-gray-600 rounded-lg bg-gray-700">
                         <CardElement options={{ style: { base: { fontSize: '16px', color: 'white' } } }} />
                     </div>

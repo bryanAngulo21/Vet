@@ -17,7 +17,7 @@ const ModalTreatments = ({patientID}) => {
 
     const registerTreatmentsForm = (dataForm) => {
         const url = `${import.meta.env.VITE_BACKEND_URL}/tratamiento/registro`
-        const newData = { ...dataForm, paciente: patientID }
+        const newData = { ...dataForm, precio:Number(dataForm.precio*1.15),paciente: patientID }
         registerTreatments(url,newData)
     }
 
@@ -82,7 +82,7 @@ const ModalTreatments = ({patientID}) => {
                     <div>
                         <label className="mb-2 block text-sm font-semibold text-gray-50">Precio</label>
                         <input
-                            type="text" 
+                            type="num" 
                             inputMode="tel"
                             step="any" 
                             placeholder="Ingresa el precio"

@@ -37,8 +37,12 @@ const TableTreatments = ({treatments,listPatient}) => {
 
     return (
          <>
-            <ToastContainer/>
-
+           <ToastContainer
+            containerId="table-treatments-toast"
+            position="top-right"
+            autoClose={3000}
+            limit={1}
+            />
         <table className='w-full mt-5 table-auto shadow-lg  bg-white'>
         
             <thead className='bg-gray-800 text-slate-400'>
